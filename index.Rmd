@@ -1,5 +1,6 @@
 ---
 title: "IODS course project"
+author: "Keyan Liu"
 output:
   html_document:
     theme: cosmo

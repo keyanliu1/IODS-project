@@ -10,6 +10,8 @@
 ## About the book *R for Health Data Science*
 - Chapter 1 gives all the basics one needs to know before learning R, 
 - Chapter 2 to 4 introduces some basic commands(functions) to use R for data including summarizing and visualizing. 
+
+
 I find this book clear and well-organized.
 I would recommend this book to everyone who starts to learn R
 

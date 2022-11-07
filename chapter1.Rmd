@@ -1,11 +1,20 @@
 
 # About the project
+## Some thoughts about the course
+ I am feeling good about the course at the moment. In the beginning, I encountered some errors about connecting **Rstudio** and **Github**. I was a bit frustrating at that time, But after I managing to solve it, I feel encouraged.
+ 
+ I have used Rstudio a couple of times before without **Rmarkdown**. In this course, I expect to learn Rmarkdown and Github. Both of them are powerful tools and I believe that I will use them in my research in the future.
+ 
+ I found this course on sisu and I was attracted by its name, **'open data science'**
+ 
+## About the book *R for Health Data Science*
+-Chapter 1 gives all the basics one needs to know before learning R, 
+-Chapter 2 to 4 introduces some basic commands(functions) to use R for data including summarizing and visualizing. 
+I find this book clear and well-organized.
+I would recommend this book to everyone who starts to learn R
 
-*italics* and **bold**
-superscript^2^/subscript~2~
-~~strikethrough~~
-escaped: \* \_ \\
-endash: --, emdash: ---
+## Link to my Github Repository
+[https://github.com/keyanliu1/IODS-project.git.](lhttps://github.com/keyanliu1/IODS-project.git)
 
 ```{r}
 # This is a so-called "R chunk" where you can write R code.
@@ -13,5 +22,5 @@ endash: --, emdash: ---
 date()
 
 ```
-Now it starts.
+
 

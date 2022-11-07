@@ -14,7 +14,7 @@ I find this book clear and well-organized.
 I would recommend this book to everyone who starts to learn R
 
 ## Link to my Github Repository
-[https://github.com/keyanliu1/IODS-project.git.](lhttps://github.com/keyanliu1/IODS-project.git)
+[https://github.com/keyanliu1/IODS-project](https://github.com/keyanliu1/IODS-project)
 
 ```{r}
 # This is a so-called "R chunk" where you can write R code.

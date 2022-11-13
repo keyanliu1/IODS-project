@@ -54,3 +54,6 @@ z <- write.csv(learning2014, file = "learning2014.csv")
 # read data
 learning2014_2 <- read_csv("learning2014.csv")
 
+#check the data
+str(learning2014_2)
+head(learning2014_2)

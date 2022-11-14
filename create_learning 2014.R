@@ -14,7 +14,7 @@ str(lrn14)
 #there are 183 observations of 60 variables in the data frame
 
 #Create an analysis dataset with the variables gender, age, attitude, deep, stra, surf and points by combining questions in the learning2014 data, 
-#access the löibrary
+#access the library
 library(dplyr)
 #Scale combination variables to the original scales
 

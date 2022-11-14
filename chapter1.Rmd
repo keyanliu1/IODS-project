@@ -1,5 +1,5 @@
 
-# About the project
+# Chapter 1: About the project
 ## Some thoughts about the course
  I am feeling good about the course at the moment. In the beginning, I encountered some errors about connecting **Rstudio** and **Github**. I was a bit frustrating at that time, But after I managing to solve it, I feel encouraged.
  
@@ -24,5 +24,5 @@ I would recommend this book to everyone who starts to learn R
 date()
 
 ```
-
+## End of Chapter 1
 

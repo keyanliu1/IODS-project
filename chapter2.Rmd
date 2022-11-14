@@ -1,13 +1,90 @@
-# Regression and model validation
+# Chapter 2: Regression and model validation
 
 *This work includes performing and interpreting regression analysis. Specifically, this work includes plotting the data frame, fitting linear regression model, interpreting results and producing diagnostic plots.*
 
-- Describe your work and results clearly. 
-- Assume the reader has an introductory course level understanding of writing and reading R code as well as statistical methods.
-- Assume the reader has no previous knowledge of your data or the more advanced methods you are using.
-
+## 2.1 read the data
+The data is collected from 'international survey of Approaches to Learning', made possible by Teachers' Academy funding for Kimmo Vehkalahti in 2013-2015. with some data wrangling, the final dataset i am working with contains 166 observations and 7 variables. The variables include gender, age, attitude, deep, stra, surf and points.
 ```{r}
 date()
+
+#library
+library(GGally)
+library(ggplot2)
+library(dplyr)
+library(tidyverse)
+# read the data into memory
+lrn14 <- read.table("https://raw.githubusercontent.com/KimmoVehkalahti/Helsinki-Open-Data-Science/master/datasets/learning2014.txt", sep=",", header=TRUE)
+#check the dimension and structure of the data
+dim(lrn14)
+str(lrn14)
+```
+## 2.2 Graphical overview of the data
+
+```{r}
+# draw a scatter plot matrix of the variables in learning2014.
+# [-1] excludes the first column (gender)
+pairs(lrn14[-1])
+
+# create a more advanced plot matrix with ggpairs()
+p <- ggpairs(lrn14, mapping = aes(col = gender ), lower = list(combo = wrap("facethist", bins = 20)))
+
+# draw the plot
+
+p2 <- ggpairs(lrn14, mapping = aes(col = gender, alpha=0.3 ), lower = list(combo = wrap("facethist", bins = 20)))
+p2
+
+#summary of the data 
+summary(lrn14)
+```
+Part 2.2 shows the graphical overview of the data. The distributions of the variables can be found on the diagonal of the plot. The relationships among the variables are observed on the off-diagonal. R console table summaries the variables.
+
+## 2.3 fitting a regression model
+
+```{r}
+# create a regression model with multiple explanatory variables
+my_model <- lm(points ~ deep + stra + surf, data = lrn14)
+#summary of the model
+summary(my_model)
+
+```
+From the summary of the model, I find that the stra has a positive statistical relationship with points(0.99), whereas surf variable has negative relationship(-1.63). the effect of deep on points is not significant because the p-value is bigger than 0.1(p-value is the result of a null hypothesis significance test for the true parameter equal to zero). Therefore, I remove the deep variable,include attitude and rerun the model
+
+```{r}
+# create a regression model with multiple explanatory variables
+my_model2 <- lm(points ~  attitude + stra + surf, data = lrn14)
+#summary of the model
+summary(my_model2)
+
+```
+From the new model, I find that attitude has a significant positive impact on points. however, the effect of surf is not significant. I remove surf and rerun the model
+
+```{r}
+# create a regression model with multiple explanatory variables
+my_model3 <- lm(points ~  attitude + stra , data = lrn14)
+#summary of the model
+summary(my_model3)
+
 ```
 
-let's go..
+## 2.4 interpret the result of the model
+From the summary of the model above, the estimated coefficient of attitude is 3.4658. The interpretation is that, holding other variables unchanged, one unit increase of attitude results in 3.46 unit increase of point. The positive effect is significant as the p-value of the coefficient is very low. using the same interpretation, the estimated coefficient of stra is 0.91, which means, holding other variables unchanged, one unit increase of stra results in 0.91 unit increase of point. However, this effect is only in 0.1 significance level as p-value is smaller than 0.1 but greater than 0.05. The adjusted R-square is 0.195. The interpretation of this figure is that 0.195 of the variability in the dependent is explained by the explanatory variables.
+
+## 2.5 Diagnostic plots
+```{r}
+
+# draw diagnostic plots using the plot() function. Choose the plots 1, 2 and 5
+par(mfrow = c(2,2))
+plot(my_model3)
+
+```
+
+Linear regression models have four main assumptions:
+- Linear relationship between predictors and outcome;
+- Independence of residuals;
+- Normal distribution of residuals;
+- Equal variance of residuals.
+
+From the diagnostic plot, I am able to observe properties of the residuals. From Q-Q plot, the residuals match normal distribution quite well. From Residuals vs fitted graph, the residuals are randomly distributed on both sides of fitted values, and the distance from both sides are quite the same. 
+In this way, I interpret the validity of those assumptions based on the diagnostic plots.
+
+## End of Chapter 2

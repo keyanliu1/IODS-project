@@ -1,0 +1,121 @@
+# Chapter 3: Logistic regression
+
+*This work includes performing and interpreting logistic regression analysis. Specifically, this work includes plotting the data frame, fitting logistic regression model, and interpreting results .*
+
+## 3.1 read the data
+This data approach student achievement in secondary education of two Portuguese schools. The data attributes include student grades, demographic, social and school related features) and it was collected by using school reports and questionnaires. Two datasets are provided regarding the performance in two distinct subjects: Mathematics (mat) and Portuguese language (por). The two datasets were modeled under binary/five-level classification and regression tasks. 
+```{r}
+date()
+
+#library
+library(GGally)
+library(ggplot2)
+library(dplyr)
+library(tidyverse)
+# read the data into memory
+library(readr)
+alc <- read_csv("https://raw.githubusercontent.com/KimmoVehkalahti/Helsinki-Open-Data-Science/master/datasets/alc.csv", show_col_types=FALSE)
+
+```
+## 3.2 Choose the variables of interest
+The purpose of your analysis is to study the relationships between high/low alcohol consumption and some of the other variables in the data. In this exercise, I choose famrel, studytime, age and freetime variables and study the relationship between the 4 variables and alcohol consumption.
+I assume that the famrel and studytime have nagative impact on alcohol consumption, while age and freetime have positive impact on it.
+
+## 3.3 Graphical interpretation of the variables
+This subchapter uses the box plots to explore the distributions of my chosen variables and their relationships with alcohol consumption.
+```{r}
+
+#distribution plots using bar plot
+# initialize a plot of alcohol use
+g_1 <- ggplot(data = alc, aes(x = alc_use))
+g_1 + geom_bar()
+g_2 <- ggplot(data = alc, aes(x = high_use))
+g_2 + geom_bar()
+g_3 <- ggplot(data = alc, aes(x = famrel))
+g_3 + geom_bar()
+g_4 <- ggplot(data = alc, aes(x = studytime))
+g_4 + geom_bar()
+g_5 <- ggplot(data = alc, aes(x = age))
+g_5 + geom_bar()
+g_6 <- ggplot(data = alc, aes(x = freetime))
+g_6 + geom_bar()
+# initialize a plot of high_use and famrel
+g1 <- ggplot(alc, aes(x = high_use, y = famrel))
+
+# define the plot as a boxplot and draw it
+g1 + geom_boxplot() + ylab("family relationship")
+
+# studytime and alchohol consumption
+g2 <- ggplot(alc, aes(x = high_use, y = studytime))
+g2 + geom_boxplot() + ylab("study time")
+
+# age and alchohol consumption
+g3 <- ggplot(alc, aes(x = high_use, y = age))
+g3 + geom_boxplot() + ylab("age")
+
+# freetime and alchohol consumption
+g4 <- ggplot(alc, aes(x = high_use, y = freetime))
+g4 + geom_boxplot() + ylab("freetime")
+```
+
+Part 3.3 shows the graphical overview of the variables. The distributions of the variables can be found in the bar plots. I find that the distributions of alcohol use,high_use, studytime and age is left-skewed. While the distributions of famrel and freetime are right-skewed. From the box plots, it seems that famrel and studytime are nagatively correlated with alcohol use. However, age and freetime seem to have no effect on alcohol use.
+
+## 3.4 logistic regression models
+This part runs the logistic regression with the variables selected above
+
+```{r}
+# find the model with glm()
+m <- glm(high_use ~ famrel + studytime + age + freetime, data = alc, family = "binomial")
+
+summary(m)
+OR <- coef(m) %>% exp
+CI <- confint(m)
+cbind(OR, CI)
+```
+
+From the table, I observe that the estimated coefficients of famrel and studtime are -0.35 and -0.57 respectively, and they are statistically significant concluded from p-value. The results indicate that famrel adn studytime have negative relationship with alcohol consumption, which jusitifies my assumption before. On the other hand, The estimated coefficients of age and freetime are positive(0.22,0.38 respectively). The p-value of age coeffienct is 0.03, which indicates that the coefficient is significate at 0.05 level but not at 0.01 level. In addition, the odds ratio, which is exponential of the estimated coeffients, and confidence interval are given in the table. the exponents of the coefficients of a logistic regression model can be interpreted as odds ratios between a unit change (vs. no change) in the corresponding explanatory variable.
+
+## 3.5 Prediction 
+
+
+```{r, echo=FALSE}
+
+library(readr)
+library(dplyr)
+
+alc <- mutate(alc, probability = predict(m, type = "response"))
+alc <- mutate(alc, prediction = probability > 0.5)
+
+g <- ggplot(alc, aes(x = high_use, y = probability))
+g + geom_point() 
+table(high_use = alc$high_use, prediction = alc$prediction)
+
+Training_error <- (21+92)/(21+92+238+19)
+```
+
+This part shows the predictive power of the model. A 2x2 cross tabulation is provided. The general predictive performance is good. However, a type of error is significant. When the high_use is true, the model always wrongly predict the type of alcohol use. The training error is 0.305, which is quite high. A better model may be needed. However, this model is still better than some simple guessing strategy.
+
+## 3.6 Cross-validation
+
+In this part,a 10-fold cross-validation on my model is performed.
+
+```{r}
+
+# define a loss function (mean prediction error)
+loss_func <- function(class, prob) {
+  n_wrong <- abs(class - prob) > 0.5
+  mean(n_wrong)
+}
+
+# call loss_func to compute the average number of wrong predictions in the (training) data
+loss_func(class = alc$high_use, prob = 0)
+
+# K-fold cross-validation
+library(boot)
+cv <- cv.glm(data = alc, cost = loss_func, glmfit = m, K = nrow(alc))
+
+# average number of wrong predictions in the cross validation
+cv$delta[1]
+```
+
+ The average number of wrong predictions in the cross validation is 0.32, which is larger than 0.26. Unfortunately, my model does not have better test set performance than the model in exercise 3.

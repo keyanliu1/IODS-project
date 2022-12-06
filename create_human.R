@@ -41,4 +41,5 @@ gii <- mutate(gii, Edu2.FM = Edu2.F / Edu2.M)
 gii <- mutate(gii, Labo2.FM = Labo.F / Labo.M)
 
 #join the dataset together
-math_por <- inner_join(lhd, gii, by = "Country")
+human <- inner_join(lhd, gii, by = "Country")
+human <- write.csv(human, file = "human.csv")

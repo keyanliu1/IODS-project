@@ -1,0 +1,133 @@
+# Chapter 5: Dimensionality reduction techniques
+
+*This work includes performing and interpreting dimensionality and reduction techniques. Specifically, this work includes plotting the data frame, Perform principal component analysis(PCA), and multiple correspondence analysis(MCA).*
+
+## 5.1 explore the data
+ Load the human data from the website. The data is titled human data and it contains 155 ovservations and 8 variables.
+ 
+```{r}
+date()
+
+#library
+library(GGally)
+library(ggplot2)
+library(dplyr)
+library(tidyverse)
+# read the data into memory
+human <- read.table("https://raw.githubusercontent.com/KimmoVehkalahti/Helsinki-Open-Data-Science/master/datasets/human2.txt", 
+                    sep =",", header = T)
+
+# explore the dataset
+str(human)
+summary(human)
+# remove the Country variable
+#human_ <- select(human, -Country)
+
+# Access GGally
+library(GGally)
+
+# visualize the 'human_' variables
+ggpairs(human[1:4])
+ggpairs(human[5:8])
+# Access corrplot
+library(corrplot)
+
+# compute the correlation matrix and visualize it with corrplot
+corr<-cor(human)
+corrplot(corr)
+```
+
+Part 5.1 shows the graphical overview of the variables. The distributions of the variables can be found in the second  and third plots. From where we conclude that almost all variables are skewed distributed. The last plot is correlation plot which clearly shows the correlation among the variables.
+
+## 5.2 PCA on raw data
+This part Performs principal component analysis (PCA) on the raw (non-standardized) human data.
+
+```{r}
+# Work with the exercise in this chunk, step-by-step. Fix the R code!
+# pca_human, dplyr are available
+pca_human <- prcomp(human)
+# create and print out a summary of pca_human
+s <- summary(pca_human)
+
+biplot(pca_human, choices = 1:2,cex = c(1, 1),col = c("grey40", "deeppink2"))
+
+# rounded percentanges of variance captured by each PC
+pca_pr <- round(100*s$importance[2, ], digits = 1)
+
+# print out the percentages of variance
+pca_pr
+
+```
+From the PCA result, the first priciple component captures all the variability, while the second captures 0.
+
+## 5.3 PCA on scaled data
+This part Performs principal component analysis (PCA) on the standardized human data.
+
+```{r}
+# Work with the exercise in this chunk, step-by-step. Fix the R code!
+human_<-scale(human)
+# pca_human, dplyr are available
+pca_human_ <- prcomp(human_)
+# create and print out a summary of pca_human
+s <- summary(pca_human_)
+
+
+# rounded percentanges of variance captured by each PC
+pca_pr <- round(100*s$importance[2, ], digits = 1)
+
+# print out the percentages of variance
+pca_pr
+# create object pc_lab to be used as axis labels
+paste0(names(pca_pr), " (", pca_pr, "%)")
+pc_lab<-pca_pr
+# draw a biplot
+biplot(pca_human_, cex = c(0.8, 1), col = c("grey40", "deeppink2"), xlab = pc_lab[1], ylab = pc_lab[2])
+```
+
+The PCA on standardized data is totally different from the PCA on raw data. In the part 5.2 where I perform PCA on raw data, the first PC accounts for 100 percent of the variability and also the variable GNI accounts almost 100% of the first component. This is because the value of variable GNI is way too large. After standardization, the results become normal. The first component captures 53.6 percent of the total variability where the second captures 16.2. Also from this plot, I am able to find the correlation between the variables and the correalation between the variables and the PCs. This is done by noticing that:
+- The angle between the arrows can be interpreted as the correlation between the variables.
+- The angle between a variable and a PC axis can be interpreted as the correlation between the two.
+- The length of the arrows are proportional to the standard deviations of the variables.
+
+## 5.4 Interpret the PCs
+
+In this part,I interpret the PCs. From the plot and interpretation method I discribe above, the variables Labor.FM and Parli.F mainly contribute to PC2, while the others mainly contribute to PC1.
+
+## 5.5 Use Multiple Correspondence Analysis (MCA) on the tea data
+
+In this part, I explore the tea data and perform Multiple Correspondence Analysis (MCA) on it. The tea data comes from the FactoMineR package and it is measured with a questionnaire on tea: 300 individuals were asked how they drink tea (18 questions) and what are their product's perception (12 questions).
+```{r}
+
+# tea_time is available
+
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+tea <- read.csv("https://raw.githubusercontent.com/KimmoVehkalahti/Helsinki-Open-Data-Science/master/datasets/tea.csv", stringsAsFactors = TRUE)
+# column names to keep in the dataset
+keep_columns <- c("Tea", "How", "how", "sugar", "where", "lunch")
+
+# select the 'keep_columns' to create a new dataset
+tea_time <- select(tea, one_of(keep_columns))
+
+# look at the summaries and structure of the data
+summary(tea_time)
+
+str(tea_time)
+# visualize the dataset
+library(ggplot2)
+pivot_longer(tea_time, cols = everything()) %>% 
+  ggplot(aes(value)) + facet_wrap("name", scales = "free")+ geom_bar()+ theme(axis.text.x = element_text(angle=20,  hjust = 1, size = 8))
+# multiple correspondence analysis
+library(FactoMineR)
+mca <- MCA(tea_time, graph = FALSE)
+
+# summary of the model
+summary(mca)
+
+# visualize MCA
+plot(mca, invisible=c("ind"), graph.type = "classic",habillage = "quali")
+
+```
+
+From the MCA factor map, I observe clearly how the variables account for each dimension. For example, the green variable only account for the dimension 2 while tea bag mostly account for dimension 1.
